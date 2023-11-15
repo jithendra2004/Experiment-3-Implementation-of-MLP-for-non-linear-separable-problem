@@ -1,13 +1,14 @@
-# Experiment-3-Implementation-of-MLP-for-non-linear-separable-problem
-**AIM:**
+# Experiment-3-IMPLEMENTATION-OF-MLP-FOR-NON-LINEAR-SEPARABLE-PROBLEM
+## AIM:
 
-To implement a perceptron for classification using Python
+To implement a perceptron for classification using Python.
 
-**EQUIPMENTS REQUIRED:**
+## EQUIPMENTS REQUIRED:
 Hardware – PCs
+
 Anaconda – Python 3.7 Installation / Google Colab /Jupiter Notebook
 
-**RELATED THEORETICAL CONCEPT:**
+## RELATED THEORETICAL CONCEPT:
 Exclusive or is a logical operation that outputs true when the inputs differ.For the XOR gate, the TRUTH table will be as follows
 XOR truth table
 ![Img1](https://user-images.githubusercontent.com/112920679/195774720-35c2ed9d-d484-4485-b608-d809931a28f5.gif)
@@ -23,26 +24,124 @@ The inner layers for deeper processing of the inputs are known as hidden layers.
 ![Img 4](https://user-images.githubusercontent.com/112920679/195775183-1f64fe3d-a60e-4998-b4f5-abce9534689d.gif)
 The number of layers in MLP is not fixed and thus can have any number of hidden layers for processing. In the case of MLP, the weights are defined for each hidden layer, which transfers the signal to the next proceeding layer.Using the MLP approach lets us dive into more than two dimensions, which in turn lets us separate the outputs of XOR using multidimensional equations.Each hidden unit invokes an activation function, to range down their output values to 0 or The MLP approach also lies in the class of feed-forward Artificial Neural Network, and thus can only communicate in one direction. MLP solves the XOR problem efficiently by visualizing the data points in multi-dimensions and thus constructing an n-variable equation to fit in the output values using back propagation algorithm
 
-**Algorithm :**
+## ALGORITHM:
 
-Step 1 : Initialize the input patterns for XOR Gate
-Step 2: Initialize the desired output of the XOR Gate
-Step 3: Initialize the weights for the 2 layer MLP with 2 Hidden neuron 
-              and 1 output neuron
-Step 3: Repeat the  iteration  until the losses become constant and 
-              minimum
-              (i)  Compute the output using forward pass output
-              (ii) Compute the error  
-		          (iii) Compute the change in weight ‘dw’ by using backward 
-                     propagation algorithm.
-             (iv) Modify the weight as per delta rule.
-             (v)   Append the losses in a list
-Step 4 : Test for the XOR patterns.
+### Step 1 : 
+Initialize the input patterns for XOR Gate
+### Step 2: 
+Initialize the desired output of the XOR Gate
+### Step 3: 
+Initialize the weights for the 2 layer MLP with 2 Hidden neuron and 1 output neuron
+### Step 3: 
+Repeat the  iteration  until the losses become constant and minimum
+              (i)  Compute the output using forward pass output.
+              (ii) Compute the error.
+	          (iii) Compute the change in weight ‘dw’ by using backward propagation algorithm.
+              (iv) Modify the weight as per delta rule.
+              (v)   Append the losses in a list.
+### Step 4 : 
+Test for the XOR patterns.
 
-** PROGRAM** 
-/Type your Program here/
+## PROGRAM:
+Developed by : V.A.JITHENDRA
 
+Register number : 212221230043
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+```python
+x=np.array([[0,0,1,1],[0,1,0,1]])
+y=np.array([[0,1,1,0]])
 
- **OUTPUT** 
+#No. of neurons in each layer
+n_x = 2 #Input-Layer
+n_y = 1 #Output-Layer
+n_h = 2 #Hidden-Layer
 
-** RESULT**
+m = x.shape[1]
+lr = 0.1 #Learning Rate
+np.random.seed(2)
+w1 = np.random.rand(n_h,n_x)   # Weight matrix for hidden layer (x to hidden)
+w2 = np.random.rand(n_y,n_h)   # Weight matrix for output layer (hidden to y)
+losses = []
+```
+```python
+def sigmoid(z):
+    z= 1/(1+np.exp(-z))
+    return z
+```
+```python
+def forward_prop(w1,w2,x):
+    z1 = np.dot(w1,x)   #y1 - Summing junction for hidden layer (v1.w1+v2.w1)
+    a1 = sigmoid(z1)    #Hidden layer activation function - phi(.)
+
+    z2 = np.dot(w2,a1) #y3 - Summing junction for output layer (v3.w3)
+    a2 = sigmoid(z2)   #Output layer activation function - phi(.)
+    return z1,a1,z2,a2
+```
+```python
+def back_prop(m,w1,w2,z1,a1,z2,a2,y):    
+    dz2 = a2-y  #Calculating error actual - desired
+
+    dw2 = np.dot(dz2,a1.T)/m  #adjusting output layer weight matrix
+    dz1 = np.dot(w2.T,dz2) * a1*(1-a1) #adjusting output layer
+
+    dw1 = np.dot(dz1,x.T)/m  #adjusting hidden layer weight matrix
+
+    dw1 = np.reshape(dw1,w1.shape)
+    dw2 = np.reshape(dw2,w2.shape)    
+    return dz2,dw2,dz1,dw1
+```
+```python
+iterations = 10000
+for i in range(iterations):
+    z1,a1,z2,a2 = forward_prop(w1,w2,x)
+
+    loss = -(1/m)*np.sum(y*np.log(a2)+(1-y)*np.log(1-a2))
+    losses.append(loss)
+    da2,dw2,dz1,dw1 = back_prop(m,w1,w2,z1,a1,z2,a2,y)
+    
+    w2 = w2-lr*dw2
+    w1 = w1-lr*dw1
+```
+```python
+# We plot losses to see how our network is doing
+plt.plot(losses)
+plt.xlabel("EPOCHS")
+plt.ylabel("LOSS VALUE")
+```
+```python
+def predict(w1,w2,input):
+    z1,a1,z2,a2 = forward_prop(w1,w2,test)
+    a2 = np.squeeze(a2)
+    if a2>=0.5:
+        print( [i[0] for i in input], 1)
+    else:
+        print( [i[0] for i in input], 0)
+
+print('INPUT',' OUTPUT')
+test=np.array([[0],[0]])
+predict(w1,w2,  test)
+test=np.array([[0],[1]])
+predict(w1,w2,  test)
+test=np.array([[1],[0]])
+predict(w1,w2,  test)
+test=np.array([[1],[1]])
+predict(w1,w2,  test)
+```
+
+ ## OUTPUT:
+### LOSS GRAPH
+![image](https://github.com/chetansathishkumar/Experiment-3-Implementation-of-MLP-for-non-linear-separable-problem/assets/75260837/979824f0-c75f-424d-86ff-5f527bb69fb4)
+<br>
+</br>
+
+### INPUT - OUTPUT FOR XOR GATE
+![image](https://github.com/chetansathishkumar/Experiment-3-Implementation-of-MLP-for-non-linear-separable-problem/assets/75260837/9e722fa6-3164-497e-8afd-b9c5ad16fb5e)
+<br>
+</br>
+
+## RESULT:
+Thus, an MLP is implemented for non linear separable problem using Python.
